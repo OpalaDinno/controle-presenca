@@ -108,8 +108,12 @@ return{evento,data,ambito,linhas};
 }
 
 function mensagem(){
-const x=dados();if(!x)return null;const presentes=x.linhas.filter(a=>a.presente).length;
-let msg=`🏍️ *CONTROLE DE PRESENÇA - INSANOS M.C.*
+  const x = dados();
+  if(!x) return null;
+
+  const presentes = x.linhas.filter(a => a.presente).length;
+
+  let msg = `🏍️ *CONTROLE DE PRESENÇA - INSANOS M.C.*
 
 📌 *Evento:* ${x.evento}
 📍 *Âmbito:* ${x.ambito}
@@ -117,8 +121,21 @@ let msg=`🏍️ *CONTROLE DE PRESENÇA - INSANOS M.C.*
 👥 *Presentes:* ${presentes}/${x.linhas.length}
 
 *INTEGRANTES:*`;
-x.linhas.forEach(a=>{const status=a.presente?"✅ PRESENTE":"❌ AUSENTE";const local=a.local?" | 📍 LOCAL":"";const veiculo=a.veiculo?` | 🛵 ${a.veiculo}`:"";msg+=`\n• ${a.nome} — ${status}${local}${veiculo}`});
-return msg+"\n\n_Controle registrado pelo responsável._";
+
+  x.linhas.forEach(a => {
+    const pe = a.presente ? "✅" : "❌";
+
+    // Verifica separadamente se foi ao PE e ao Local
+    const localMarcado = document.querySelector(
+      `.local[data-index="${x.linhas.indexOf(a)}"]`
+    ).checked;
+
+    const veiculo = a.veiculo ? ` | 🛵 ${a.veiculo}` : "";
+
+    msg += `\n• ${a.nome} — PE: ${pe} | Local: ${localMarcado ? "✅" : "❌"}${veiculo}`;
+  });
+
+  return msg + "\n\n_Controle registrado pelo responsável._";
 }
 
 function enviar(){const msg=mensagem();if(!msg)return;window.location.href=`https://wa.me/5512981209534?text=${encodeURIComponent(msg)}`}
