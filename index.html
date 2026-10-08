@@ -72,7 +72,7 @@ membros.forEach((nome,i)=>{
 const tr=document.createElement("tr");
 tr.innerHTML=`<td class="member-name">${nome}</td>
 <td><input type="checkbox" class="presenca" data-index="${i}" onchange="atualizarContador()"></td>
-<td><input type="checkbox" class="local" data-index="${i}"></td>
+<td><input type="checkbox" class="local" data-index="${i}" onchange="atualizarContador()"></td>
 <td><select class="vehicle" data-index="${i}"><option value="">-</option><option>Moto</option><option>Carro</option><option>Outros</option></select></td>`;
 tbody.appendChild(tr);
 });
