@@ -100,8 +100,9 @@ if(!evento){alert("Selecione o evento.");return null} if(!data){alert("Informe a
 if(!ambito){alert("Selecione Regional ou Divisão.");return null}
 const linhas=membros.map((nome,i)=>({
 nome,
-presente:document.querySelector(`.presenca[data-index="${i}"]`).checked,
-local:document.querySelector(`.local[data-index="${i}"]`).checked,
+presente: document.querySelector(`.presenca[data-index="${i}"]`).checked ||
+  document.querySelector(`.local[data-index="${i}"]`).checked,
+local: document.querySelector(`.local[data-index="${i}"]`).checked,
 veiculo:document.querySelector(`.vehicle[data-index="${i}"]`).value
 }));
 return{evento,data,ambito,linhas};
