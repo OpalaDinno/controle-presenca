@@ -77,7 +77,20 @@ tr.innerHTML=`<td class="member-name">${nome}</td>
 tbody.appendChild(tr);
 });
 
-function atualizarContador(){document.getElementById("presentes").textContent=document.querySelectorAll(".presenca:checked").length}
+function atualizarContador(){
+  let total = 0;
+
+  membros.forEach((nome, i) => {
+    const presenca = document.querySelector(`.presenca[data-index="${i}"]`).checked;
+    const local = document.querySelector(`.local[data-index="${i}"]`).checked;
+
+    if (presenca || local) {
+      total++;
+    }
+  });
+
+  document.getElementById("presentes").textContent = total;
+}
 function formatarData(v){if(!v)return "Não informada";const[a,m,d]=v.split("-");return `${d}/${m}/${a}`}
 
 function dados(){
