@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controle de Presença - INSANOS M.C.</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#111;color:#eee}
+.container{max-width:1000px;margin:auto;padding:20px}header{text-align:center;margin-bottom:20px}
+h1{margin:0 0 6px;font-size:28px}.subtitle{color:#aaa;margin:0}
+.card{background:#1c1c1c;border:1px solid #333;border-radius:12px;padding:18px;margin-bottom:18px}
+.grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:14px}
+label{display:block;font-weight:bold;margin-bottom:7px}
+select,input[type="date"]{width:100%;padding:11px;border-radius:8px;border:1px solid #555;background:#111;color:#fff;font-size:15px}
+.radio-group{display:flex;gap:20px;flex-wrap:wrap;padding:10px 0 0}.radio-group label{display:flex;align-items:center;gap:7px;font-weight:normal;margin:0}
+.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:650px}
+th,td{padding:11px 9px;border-bottom:1px solid #333;text-align:center}th{background:#262626;position:sticky;top:0}
+th:first-child,td:first-child{text-align:left}.member-name{font-weight:bold}
+input[type="checkbox"]{width:20px;height:20px;cursor:pointer;accent-color:#36c759}
+.vehicle{min-width:130px;padding:8px}.actions{display:flex;gap:10px;flex-wrap:wrap}
+button{border:0;border-radius:9px;padding:13px 18px;font-weight:bold;cursor:pointer;font-size:15px;background:#25d366;color:#071b0c;flex:1;min-width:220px}
+button.copy{background:#444;color:#fff}button.clear{background:#8b1e1e;color:#fff}
+.info{color:#bbb;line-height:1.5}.counter{margin-top:12px;color:#aaa;font-size:14px}.counter strong{color:#fff}
+@media(max-width:700px){.grid{grid-template-columns:1fr}h1{font-size:23px}.container{padding:12px}}
+</style>
+</head>
+<body>
+<div class="container">
+<header><h1>🏍️ CONTROLE DE PRESENÇA</h1><p class="subtitle">INSANOS M.C.</p></header>
+
+<section class="card">
+<div class="grid">
+<div><label for="evento">Evento</label>
+<select id="evento">
+<option value="">Selecione o evento...</option>
+<option>Campanha do Agasalho</option><option>PUB</option><option>Reunião</option>
+<option>Bate e Volta</option><option>Bonde Noturno</option><option>Bonde Insano</option>
+<option>Viagem Insana</option><option>Social Brasil</option><option>Doação de Sangue</option>
+<option>Ação Social</option><option>Arrecadação</option>
+</select></div>
+<div><label for="data">Data</label><input type="date" id="data"></div>
+<div><label>Âmbito</label><div class="radio-group">
+<label><input type="radio" name="ambito" value="Regional"> Regional</label>
+<label><input type="radio" name="ambito" value="Divisão"> Divisão</label>
+</div></div>
+</div></section>
+
+<section class="card"><div class="table-wrap"><table>
+<thead><tr><th>Integrante</th><th>Presença</th><th>Local</th><th>Veículo</th></tr></thead>
+<tbody id="members"></tbody>
+</table></div>
+<div class="counter">Presentes: <strong id="presentes">0</strong> de <strong id="total">17</strong></div>
+</section>
+
+<section class="card info"><strong>ℹ️ IMPORTANTE</strong>
+<p>Preencha o evento, âmbito, data e situação de cada integrante. Depois clique em <strong>ENVIAR PRESENÇA</strong>. O resumo será aberto no WhatsApp para o responsável pelo controle.</p>
+<p>🟢 <strong>Destinatário:</strong> Castilho</p></section>
+
+<div class="actions">
+<button type="button" onclick="enviar()">📲 ENVIAR PRESENÇA</button>
+<button type="button" class="copy" onclick="copiar()">📋 COPIAR RESUMO</button>
+<button type="button" class="clear" onclick="limpar()">🗑️ LIMPAR</button>
+</div>
+</div>
+
+<script>
+const membros=["O Beudo","Júnior","Jhony Guerra","Vertão","Braw","Indiano","Sergio A+","O Juiz","Mateus","Gouveia","Jorge A+","Nunes","Castilho O+","Sprovieri","Macaco","Vira-lata!","LaCasa"];
+const tbody=document.getElementById("members");
+document.getElementById("total").textContent=membros.length;
+
+membros.forEach((nome,i)=>{
+const tr=document.createElement("tr");
+tr.innerHTML=`<td class="member-name">${nome}</td>
+<td><input type="checkbox" class="presenca" data-index="${i}" onchange="atualizarContador()"></td>
+<td><input type="checkbox" class="local" data-index="${i}"></td>
+<td><select class="vehicle" data-index="${i}"><option value="">-</option><option>Moto</option><option>Carro</option><option>Outros</option></select></td>`;
+tbody.appendChild(tr);
+});
+
+function atualizarContador(){document.getElementById("presentes").textContent=document.querySelectorAll(".presenca:checked").length}
+function formatarData(v){if(!v)return "Não informada";const[a,m,d]=v.split("-");return `${d}/${m}/${a}`}
+
+function dados(){
+const evento=document.getElementById("evento").value,data=document.getElementById("data").value;
+const ambito=document.querySelector('input[name="ambito"]:checked')?.value||"";
+if(!evento){alert("Selecione o evento.");return null} if(!data){alert("Informe a data.");return null}
+if(!ambito){alert("Selecione Regional ou Divisão.");return null}
+const linhas=membros.map((nome,i)=>({
+nome,
+presente:document.querySelector(`.presenca[data-index="${i}"]`).checked,
+local:document.querySelector(`.local[data-index="${i}"]`).checked,
+veiculo:document.querySelector(`.vehicle[data-index="${i}"]`).value
+}));
+return{evento,data,ambito,linhas};
+}
+
+function mensagem(){
+const x=dados();if(!x)return null;const presentes=x.linhas.filter(a=>a.presente).length;
+let msg=`🏍️ *CONTROLE DE PRESENÇA - INSANOS M.C.*
+
+📌 *Evento:* ${x.evento}
+📍 *Âmbito:* ${x.ambito}
+📅 *Data:* ${formatarData(x.data)}
+👥 *Presentes:* ${presentes}/${x.linhas.length}
+
+*INTEGRANTES:*`;
+x.linhas.forEach(a=>{const status=a.presente?"✅ PRESENTE":"❌ AUSENTE";const local=a.local?" | 📍 LOCAL":"";const veiculo=a.veiculo?` | 🛵 ${a.veiculo}`:"";msg+=`\n• ${a.nome} — ${status}${local}${veiculo}`});
+return msg+"\n\n_Controle registrado pelo responsável._";
+}
+
+function enviar(){const msg=mensagem();if(!msg)return;window.location.href=`https://wa.me/5512981209534?text=${encodeURIComponent(msg)}`}
+async function copiar(){const msg=mensagem();if(!msg)return;try{await navigator.clipboard.writeText(msg);alert("Resumo copiado para a área de transferência.")}catch(e){alert("Não foi possível copiar automaticamente.")}}
+function limpar(){
+if(!confirm("Deseja limpar todos os dados preenchidos?"))return;
+document.getElementById("evento").value="";document.getElementById("data").value="";
+document.querySelectorAll('input[name="ambito"]').forEach(x=>x.checked=false);
+document.querySelectorAll(".presenca,.local").forEach(x=>x.checked=false);
+document.querySelectorAll(".vehicle").forEach(x=>x.value="");atualizarContador();
+}
+</script>
+</body>
+</html>
