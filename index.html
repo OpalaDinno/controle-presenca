@@ -109,6 +109,7 @@ return{evento,data,ambito,linhas};
 
 function mensagem(){
   const x = dados();
+
   if(!x) return null;
 
   const presentes = x.linhas.filter(a => a.presente).length;
@@ -122,22 +123,28 @@ function mensagem(){
 
 *INTEGRANTES:*`;
 
-  x.linhas.forEach(a => {
-    const pe = a.presente ? "✅" : "❌";
+  x.linhas.forEach((a, i) => {
 
-    // Verifica separadamente se foi ao PE e ao Local
-    const localMarcado = document.querySelector(
-      `.local[data-index="${x.linhas.indexOf(a)}"]`
+    const foiPE = document.querySelector(
+      `.presenca[data-index="${i}"]`
     ).checked;
 
-    const veiculo = a.veiculo ? ` | 🛵 ${a.veiculo}` : "";
+    const foiLocal = document.querySelector(
+      `.local[data-index="${i}"]`
+    ).checked;
 
-    msg += `\n• ${a.nome} — PE: ${pe} | Local: ${localMarcado ? "✅" : "❌"}${veiculo}`;
+    const pe = foiPE ? "✅" : "❌";
+    const local = foiLocal ? "✅" : "❌";
+
+    const veiculo = a.veiculo
+      ? ` | 🛵 ${a.veiculo}`
+      : "";
+
+    msg += `\n• ${a.nome} — PE: ${pe} | Local: ${local}${veiculo}`;
   });
 
   return msg + "\n\n_Controle registrado pelo responsável._";
 }
-
 function enviar(){const msg=mensagem();if(!msg)return;window.location.href=`https://wa.me/5512981209534?text=${encodeURIComponent(msg)}`}
 async function copiar(){const msg=mensagem();if(!msg)return;try{await navigator.clipboard.writeText(msg);alert("Resumo copiado para a área de transferência.")}catch(e){alert("Não foi possível copiar automaticamente.")}}
 function limpar(){
