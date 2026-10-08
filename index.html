@@ -46,7 +46,7 @@ button.copy{background:#444;color:#fff}button.clear{background:#8b1e1e;color:#ff
 </div></section>
 
 <section class="card"><div class="table-wrap"><table>
-<thead><tr><th>Integrante</th><th>Foi ao PE</th><th>Foi ao Local</th><th>Veículo</th></tr></thead>
+<thead><tr><th>Integrante</th><th>Presença</th><th>Veículo</th></tr></thead>
 <tbody id="members"></tbody>
 </table></div>
 <div class="counter">Presentes: <strong id="presentes">0</strong> de <strong id="total">17</strong></div>
@@ -72,23 +72,12 @@ membros.forEach((nome,i)=>{
 const tr=document.createElement("tr");
 tr.innerHTML=`<td class="member-name">${nome}</td>
 <td><input type="checkbox" class="presenca" data-index="${i}" onchange="atualizarContador()"></td>
-<td><input type="checkbox" class="local" data-index="${i}" onchange="atualizarContador()"></td>
 <td><select class="vehicle" data-index="${i}"><option value="">-</option><option>Moto</option><option>Carro</option><option>Outros</option></select></td>`;
 tbody.appendChild(tr);
 });
 
 function atualizarContador(){
-  let total = 0;
-
-  membros.forEach((nome, i) => {
-    const presenca = document.querySelector(`.presenca[data-index="${i}"]`).checked;
-    const local = document.querySelector(`.local[data-index="${i}"]`).checked;
-
-    if (presenca || local) {
-      total++;
-    }
-  });
-
+  const total = document.querySelectorAll(".presenca:checked").length;
   document.getElementById("presentes").textContent = total;
 }
 function formatarData(v){if(!v)return "Não informada";const[a,m,d]=v.split("-");return `${d}/${m}/${a}`}
@@ -100,9 +89,7 @@ if(!evento){alert("Selecione o evento.");return null} if(!data){alert("Informe a
 if(!ambito){alert("Selecione Regional ou Divisão.");return null}
 const linhas=membros.map((nome,i)=>({
 nome,
-presente: document.querySelector(`.presenca[data-index="${i}"]`).checked ||
-  document.querySelector(`.local[data-index="${i}"]`).checked,
-local: document.querySelector(`.local[data-index="${i}"]`).checked,
+presente:document.querySelector(`.presenca[data-index="${i}"]`).checked,
 veiculo:document.querySelector(`.vehicle[data-index="${i}"]`).value
 }));
 return{evento,data,ambito,linhas};
@@ -110,7 +97,6 @@ return{evento,data,ambito,linhas};
 
 function mensagem(){
   const x = dados();
-
   if(!x) return null;
 
   const presentes = x.linhas.filter(a => a.presente).length;
@@ -124,24 +110,10 @@ function mensagem(){
 
 *INTEGRANTES:*`;
 
-  x.linhas.forEach((a, i) => {
-
-    const foiPE = document.querySelector(
-      `.presenca[data-index="${i}"]`
-    ).checked;
-
-    const foiLocal = document.querySelector(
-      `.local[data-index="${i}"]`
-    ).checked;
-
-    const pe = foiPE ? "✅" : "❌";
-    const local = foiLocal ? "✅" : "❌";
-
-    const veiculo = a.veiculo
-      ? ` | 🛵 ${a.veiculo}`
-      : "";
-
-    msg += `\n• ${a.nome} — PE: ${pe} | Local: ${local}${veiculo}`;
+  x.linhas.forEach(a => {
+    const presenca = a.presente ? "✅" : "❌";
+    const veiculo = a.veiculo ? ` | 🛵 ${a.veiculo}` : "";
+    msg += `\n• ${a.nome} — Presença: ${presenca}${veiculo}`;
   });
 
   return msg + "\n\n_Controle registrado pelo responsável._";
@@ -152,7 +124,7 @@ function limpar(){
 if(!confirm("Deseja limpar todos os dados preenchidos?"))return;
 document.getElementById("evento").value="";document.getElementById("data").value="";
 document.querySelectorAll('input[name="ambito"]').forEach(x=>x.checked=false);
-document.querySelectorAll(".presenca,.local").forEach(x=>x.checked=false);
+document.querySelectorAll(".presenca").forEach(x=>x.checked=false);
 document.querySelectorAll(".vehicle").forEach(x=>x.value="");atualizarContador();
 }
 </script>
